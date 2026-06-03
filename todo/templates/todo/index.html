@@ -1,0 +1,20 @@
+<!-- todo/templates/todo/index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Домашняя страница</title>
+</head>
+<body>
+    <h1>Добро пожаловать в Django-ToDo</h1>
+
+    {% if user.is_authenticated %}
+        <p>Вы вошли как: <strong>{{ user.username }}</strong></p>
+        <a href="/">Главная</a> | 
+        <a href="{% url 'todo:logout' %}">Выйти</a>
+    {% else %}
+        <a href="{% url 'register' %}">Зарегистрироваться</a> | 
+        <a href="/login">Войти</a> <!-- пока статический путь -->
+    {% endif %}
+</body>
+</html>

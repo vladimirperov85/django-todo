@@ -1,8 +1,9 @@
 # pages/urls.py
 from django.urls import path
-from .views import * 
+from . import views
+
 
 urlpatterns = [
-    path('', index), 
-    path("register/",register, name="register"),
+    path('', views.index, name='index'),       
+    path('register/', views.register, name='register'),
 ]
