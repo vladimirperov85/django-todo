@@ -1,0 +1,37 @@
+<!-- todo/templates/todo/login.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+</head>
+<body>
+    <h1>Вход в систему</h1>
+    
+    <!-- Выводим ошибки, если они есть -->
+    {% if form.errors %}
+    <div style="color: red;">
+        {{ form.errors }}
+    </div>
+    {% endif %}
+    
+    <!-- Форма отправки -->
+    <form method="post">
+        {% csrf_token %}
+        
+        <p>
+            <label for="username">Логин</label><br>
+            {{ form.username }}
+        </p>
+        
+        <p>
+            <label for="password">Пароль</label><br>
+            {{ form.password }}
+        </p>
+        
+        <button type="submit">Войти</button>
+    </form>
+    
+    <p>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+</body>
+</html>

@@ -1,8 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .form import RegistrationForm
+from .form import RegistrationForm, TodoForm
 from django.contrib.auth import login, authenticate, logout
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+from .models import Todo
 
 def index(request):
     return render(request, 'todo/index.html')
@@ -22,3 +26,48 @@ def register(request) -> HttpResponse:
         form = RegistrationForm()
     context = {"form": form}
     return render(request, template_name="todo/register.html", context=context)
+
+
+def user_login(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('/')
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'todo/login.html', {'form': form})
+
+def user_logout(request):
+    logout(request)  
+    return redirect('/') 
+
+
+@login_required  # ← Декоратор: только для авторизованных
+def todo_list(request):
+    # Получаем все дела ТОЛЬКО текущего пользователя
+    todos = Todo.objects.filter(owner=request.user)
+    return render(request, 'todo/todo_list.html', {'todos': todos})
+
+
+@login_required
+def todo_create(request):
+    if request.method == "POST":
+        form = TodoForm(request.POST)
+        if form.is_valid():
+            # Создаём объект, но не сохраняем в БД сразу
+            todo = form.save(commit=False)
+            # Подставляем текущего пользователя как владельца
+            todo.owner = request.user
+            # Теперь сохраняем в БД
+            todo.save()
+            return redirect('todo_list')  # ← Перенаправляем на список дел
+    else:
+        form = TodoForm()
+    
+    return render(request, 'todo/todo_create.html', {'form': form})

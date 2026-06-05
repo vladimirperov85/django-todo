@@ -1,0 +1,49 @@
+<!-- todo/templates/todo/todo_list.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои дела</title>
+    <style>
+        a {
+            text-decoration: none;  /* ← Убираем подчёркивание */
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Мои дела</h1>
+    
+    <!-- Ссылка на главную -->
+    <a href="/">Главная</a> | 
+    <a href="{% url 'logout' %}">Выйти</a>
+    
+    <hr>
+    
+    <!-- Список дел -->
+    {% if todos %}
+        <ul>
+            {% for todo in todos %}
+            <li>
+                <strong>{{ todo.title }}</strong>
+                {% if todo.is_completed %}
+                    ✅ Выполнено: {{ todo.completed_at }}
+                {% else %}
+                    ⏳ В процессе
+                {% endif %}
+                <br>
+                <small>Создано: {{ todo.created_at }}</small>
+                {% if todo.note %}
+                    <p>Примечание: {{ todo.note }}</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>У вас пока нет дел. Создайте первое!</p>
+    {% endif %}
+    
+    <!-- Кнопка для создания нового дела -->
+    <a href="{% url 'todo_create' %}"> + Добавить </a>
+</body>
+</html>

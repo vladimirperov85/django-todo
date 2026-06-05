@@ -4,17 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Домашняя страница</title>
+    <style>
+        a {
+            text-decoration: none;
+            color: #0066cc;
+        }
+        
+    </style>
+
 </head>
 <body>
     <h1>Добро пожаловать в Django-ToDo</h1>
 
     {% if user.is_authenticated %}
         <p>Вы вошли как: <strong>{{ user.username }}</strong></p>
+        <a href="{% url 'todo_list' %}">📋 Мои дела</a> |
         <a href="/">Главная</a> | 
-        <a href="{% url 'todo:logout' %}">Выйти</a>
+        <a href="{% url 'logout' %}">Выйти</a>
     {% else %}
         <a href="{% url 'register' %}">Зарегистрироваться</a> | 
-        <a href="/login">Войти</a> <!-- пока статический путь -->
+        <a href="{% url 'login' %}">Войти</a> <!-- пока статический путь -->
     {% endif %}
 </body>
 </html>
