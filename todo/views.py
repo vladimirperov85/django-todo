@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from .models import Todo
-
+from django.utils import timezone
 def index(request):
     return render(request, 'todo/index.html')
 
@@ -71,3 +71,17 @@ def todo_create(request):
         form = TodoForm()
     
     return render(request, 'todo/todo_create.html', {'form': form})
+
+
+@login_required
+def todo_complete(request, todo_id):
+    """Отметить дело как выполненное"""
+    # Получаем дело по ID, проверяем что оно принадлежит текущему пользователю
+    todo = Todo.objects.filter(id=todo_id, owner=request.user).first()
+    
+    if todo:  
+        todo.is_completed = True
+        todo.completed_at = timezone.now()  # Фиксируем текущую дату и время
+        todo.save()
+    
+    return redirect('todo_list') 

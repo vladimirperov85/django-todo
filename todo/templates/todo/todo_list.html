@@ -30,6 +30,7 @@
                     ✅ Выполнено: {{ todo.completed_at }}
                 {% else %}
                     ⏳ В процессе
+                    <a href="{% url 'todo_complete' todo.id %}">Выполнить</a>
                 {% endif %}
                 <br>
                 <small>Создано: {{ todo.created_at }}</small>
