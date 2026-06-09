@@ -67,10 +67,8 @@ def todo_create(request):
             todo = form.save(commit=False)
             # Подставляем текущего пользователя как владельца
             todo.owner = request.user
-            # Теперь сохраняем в БД
             todo.save()
-            return redirect('todo_list')  # ← Перенаправляем на список дел
-    else:
+            return redirect('todo_list')  
         form = TodoForm()
     
     return render(request, 'todo/todo_create.html', {'form': form})
@@ -84,9 +82,9 @@ def todo_edit(request, todo_id):
     if request.method == "POST":
         form = TodoForm(request.POST, instance=todo)
         if form.is_valid():
-            form.save()  # Сохраняем изменения
-            return redirect('todo_list')  # Перенаправляем на список дел
-    else:  # GET запрос
+            form.save()  
+            return redirect('todo_list')  
+    else:  # GET 
         form = TodoForm(instance=todo)  # Показываем текущие данные в форме
     
     return render(request, 'todo/todo_edit.html', {'form': form, 'todo': todo})

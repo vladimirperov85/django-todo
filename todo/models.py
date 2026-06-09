@@ -53,4 +53,4 @@ class Todo(models.Model):
     class Meta:
         verbose_name = 'Дело'
         verbose_name_plural = 'Дела'
-        ordering = ['-created_at']  # ← Новые дела сверху
+        ordering = ['-created_at']  # Новые дела сверху
