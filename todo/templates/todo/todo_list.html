@@ -25,7 +25,7 @@
         <ul>
             {% for todo in todos %}
             <li>
-                <strong>{{ todo.title }}</strong>
+                <strong><a href="{% url 'todo_edit' todo.id %}">{{ todo.title }}</a></strong>
                 {% if todo.is_completed %}
                     ✅ Выполнено: {{ todo.completed_at }}
                 {% else %}

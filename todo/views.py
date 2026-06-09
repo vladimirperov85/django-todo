@@ -7,7 +7,9 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from .models import Todo
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
+
 def index(request):
     return render(request, 'todo/index.html')
 
@@ -26,6 +28,7 @@ def register(request) -> HttpResponse:
         form = RegistrationForm()
     context = {"form": form}
     return render(request, template_name="todo/register.html", context=context)
+
 
 
 def user_login(request):
@@ -48,7 +51,7 @@ def user_logout(request):
     return redirect('/') 
 
 
-@login_required  # ← Декоратор: только для авторизованных
+@login_required  #  Декоратор: только для авторизованных
 def todo_list(request):
     # Получаем все дела ТОЛЬКО текущего пользователя
     todos = Todo.objects.filter(owner=request.user)
@@ -72,6 +75,22 @@ def todo_create(request):
     
     return render(request, 'todo/todo_create.html', {'form': form})
 
+@ login_required
+def todo_edit(request, todo_id):
+    """Редактирование дела"""
+    # Получаем дело по ID, проверяем что оно принадлежит текущему пользователю
+    todo = get_object_or_404(Todo, id=todo_id, owner=request.user)
+    
+    if request.method == "POST":
+        form = TodoForm(request.POST, instance=todo)
+        if form.is_valid():
+            form.save()  # Сохраняем изменения
+            return redirect('todo_list')  # Перенаправляем на список дел
+    else:  # GET запрос
+        form = TodoForm(instance=todo)  # Показываем текущие данные в форме
+    
+    return render(request, 'todo/todo_edit.html', {'form': form, 'todo': todo})
+
 
 @login_required
 def todo_complete(request, todo_id):
@@ -85,3 +104,4 @@ def todo_complete(request, todo_id):
         todo.save()
     
     return redirect('todo_list') 
+
