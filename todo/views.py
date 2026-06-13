@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Todo
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.core.paginator import Paginator  
 
 def index(request):
     return render(request, 'todo/index.html')
@@ -51,11 +52,14 @@ def user_logout(request):
     return redirect('/') 
 
 
-@login_required  #  Декоратор: только для авторизованных
+@login_required  
 def todo_list(request):
     # Получаем все дела ТОЛЬКО текущего пользователя
     todos = Todo.objects.filter(owner=request.user)
-    return render(request, 'todo/todo_list.html', {'todos': todos})
+    paginator = Paginator(todos, 1) 
+    page_number = request.GET.get('page', 1)
+    todos_page = paginator.get_page(page_number)
+    return render(request, 'todo/todo_list.html', {'todos': todos_page})
 
 
 @login_required
@@ -69,8 +73,7 @@ def todo_create(request):
             todo.owner = request.user
             todo.save()
             return redirect('todo_list')  
-        form = TodoForm()
-    
+    form = TodoForm()
     return render(request, 'todo/todo_create.html', {'form': form})
 
 @ login_required
@@ -85,7 +88,7 @@ def todo_edit(request, todo_id):
             form.save()  
             return redirect('todo_list')  
     else:  # GET 
-        form = TodoForm(instance=todo)  # Показываем текущие данные в форме
+        form = TodoForm(instance=todo)  
     
     return render(request, 'todo/todo_edit.html', {'form': form, 'todo': todo})
 
@@ -93,13 +96,26 @@ def todo_edit(request, todo_id):
 @login_required
 def todo_complete(request, todo_id):
     """Отметить дело как выполненное"""
-    # Получаем дело по ID, проверяем что оно принадлежит текущему пользователю
+    
     todo = Todo.objects.filter(id=todo_id, owner=request.user).first()
     
     if todo:  
         todo.is_completed = True
-        todo.completed_at = timezone.now()  # Фиксируем текущую дату и время
+        todo.completed_at = timezone.now()  
         todo.save()
     
     return redirect('todo_list') 
+
+@login_required
+def todo_delete(request, todo_id):
+    """Удаление дела с подтверждением"""
+    todo = get_object_or_404(Todo, id=todo_id, owner=request.user)
+    
+    if request.method == "POST":
+        todo.delete()
+        return redirect('todo_list')
+    
+    # GET-запрос 
+    return render(request, 'todo/todo_confirm_delete.html', {'todo': todo})
+
 

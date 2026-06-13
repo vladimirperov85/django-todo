@@ -29,9 +29,10 @@
                 {% if todo.is_completed %}
                     ✅ Выполнено: {{ todo.completed_at }}
                 {% else %}
-                    ⏳ В процессе
+                    В процессе...
                     <a href="{% url 'todo_complete' todo.id %}">Выполнить</a>
                 {% endif %}
+                <a href="{% url 'todo_delete' todo.id %}" style="color: #cc0000;">🗑 Удалить</a>
                 <br>
                 <small>Создано: {{ todo.created_at }}</small>
                 {% if todo.note %}
@@ -41,8 +42,32 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p>У вас пока нет дел. Создайте первое!</p>
+        <p>У вас пока нет дел.</p>
     {% endif %}
+    <!-- После списка дел добавляем навигацию -->
+{% if todos.has_other_pages %}
+    <div style="margin-top: 20px; margin-bottom: 30px;">
+        
+        <!-- Кнопка "Назад" -->
+        {% if todos.has_previous %}
+            <a href="?page={{ todos.previous_page_number }}">← Назад</a>
+        {% else %}
+            <span style="color: #999;">← Назад</span>
+        {% endif %}
+        
+        <span style="margin: 0 10px;">
+            Страница {{ todos.number }} из {{ todos.paginator.num_pages }}
+        </span>
+        
+        <!-- Кнопка "Вперёд" -->
+        {% if todos.has_next %}
+            <a href="?page={{ todos.next_page_number }}">Вперёд →</a>
+        {% else %}
+            <span style="color: #999;">Вперёд →</span>
+        {% endif %}
+        
+    </div>
+{% endif %}
     
     <!-- Кнопка для создания нового дела -->
     <a href="{% url 'todo_create' %}"> + Добавить </a>

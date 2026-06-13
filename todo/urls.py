@@ -12,7 +12,7 @@ urlpatterns = [
     path('todos/create/', views.todo_create, name='todo_create'),
     path('todos/edit/<int:todo_id>/', views.todo_edit, name='todo_edit'),
     path('todos/complete/<int:todo_id>/', views.todo_complete, name='todo_complete'),
-
+    path('todos/delete/<int:todo_id>/', views.todo_delete, name='todo_delete'),
 
 
 ]

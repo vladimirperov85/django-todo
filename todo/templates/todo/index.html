@@ -18,7 +18,7 @@
 
     {% if user.is_authenticated %}
         <p>Вы вошли как: <strong>{{ user.username }}</strong></p>
-        <a href="{% url 'todo_list' %}">📋 Мои дела</a> |
+        <a href="{% url 'todo_list' %}"> Мои дела</a> |
         <a href="/">Главная</a> | 
         <a href="{% url 'logout' %}">Выйти</a>
     {% else %}
